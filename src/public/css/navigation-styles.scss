@@ -1,0 +1,51 @@
+label {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+div.navigation {
+  max-width: 400px;
+  width: 100%;
+  background: var(--primary-grey);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 15px;
+}
+
+div.searchbox {
+  display: flex;
+  align-items: stretch;
+  margin-top: 15px;
+  border-radius: 5px;
+  background: var(--off-grey);
+  border: 2px solid var(--off-grey);
+
+  input {
+    flex: 1;
+    border: none;
+    background-color: inherit;
+    font-size: 16px;
+    color: var(--primary-grey);
+    padding: 15px;
+    border-radius: inherit;
+    transition: background-color 0.2s;
+  }
+
+  input:focus {
+    background-color: white;
+  }
+
+  button {
+    background: none;
+    width: 40px;
+    display: flex;
+    align-items: center;
+    border: none;
+
+    img {
+      width: 24px;
+      height: 24px;
+    }
+  }
+}
