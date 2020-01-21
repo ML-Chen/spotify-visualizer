@@ -3,13 +3,17 @@ extends layout
 block content
   main
     .navigation
-      form#search
+      form#search(onsubmit="")
         label(for="song-search") Search for music
         .searchbox
           input#song-search(type="text", placeholder="Stevie Wonder")
-          button(type="submit")
+          button(type="submit").image-btn
             img(src="images/ios-search.svg", alt="search button icon")
       ul#search-results
       h1 Saved Songs
       ul#saved-songs
+      .now-playing
+        #song-info
+        button#play-song.image-btn
+          img(src="images/ios-play-circle.svg", alt="")
     canvas#visualizer
