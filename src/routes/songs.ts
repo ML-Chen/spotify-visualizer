@@ -17,7 +17,7 @@ router.get("/search", (req: Request, res: Response) => {
   const searchResults: SongInfo[] = mockSongData.map((mockSong: any) => ({
     id: mockSong.id,
     artists: mockSong.artists.map((artist: any) => artist.name),
-    imgUrl: mockSong.images && mockSong.images.length ? mockSong.images[2].url : "",
+    imgUrl: mockSong.album.images && mockSong.album.images.length ? mockSong.album.images[mockSong.album.images.length - 1].url : "",
     name: mockSong.name,
     audioUrl: mockSong.preview_url,
   } as SongInfo));
