@@ -21,13 +21,20 @@ label {
   font-weight: bold;
 }
 
+button {
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: inherit;
+}
+
 main {
   display: flex;
 }
 
 @media (max-width: 600px) {
   main {
-    display: block;
+    flex-direction: column-reverse;
   }
 }
 
