@@ -5,6 +5,9 @@ import { SongMeta } from "../models/SongMeta";
 import mockSongData from "../models/mockData";
 
 const router = Router();
+const spotifyApi = new SpotifyWebApi({
+
+});
 
 router.get("/search", (req: Request, res: Response) => {
   console.log(req.query);
