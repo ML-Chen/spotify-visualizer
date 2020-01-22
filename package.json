@@ -50,6 +50,7 @@
         "pug": "^2.0.4",
         "request": "^2.88.0",
         "request-promise": "^4.2.4",
+        "spotify-web-api-node": "^4.0.0",
         "ts-mongoose": "0.0.21",
         "winston": "^3.2.1"
     },
