@@ -26,7 +26,19 @@ spotifyApi.clientCredentialsGrant().then(
   }
 );
 
-router.get("/search", (req: Request, res: Response) => {
+async function searchTracks(query: string, limit = 4): Promise<SongInfo[]> {
+  const spotifyResponse = await spotifyApi.searchTracks(query, { limit: limit });
+  console.log(spotifyResponse.body);
+  return spotifyResponse.body.tracks.items.map((song: any) => ({
+    id: song.id,
+    artists: song.artists.map((artist: any) => artist.name),
+    imgUrl: song.album.images && song.album.images.length ? song.album.images[song.album.images.length - 1].url : "",
+    name: song.name,
+    audioUrl: song.preview_url,
+  } as SongInfo));
+}
+
+router.get("/search", async (req: Request, res: Response) => {
   console.log(req.query);
   if (!req.query || !req.query.query) {
     res.sendStatus(400);
@@ -34,20 +46,12 @@ router.get("/search", (req: Request, res: Response) => {
   }
 
   const searchQuery = req.query.query;
-
-  // TODO: make call to Spotify instead of grabbing sample JSON
-  const searchResults: SongInfo[] = mockSongData.map((mockSong: any) => ({
-    id: mockSong.id,
-    artists: mockSong.artists.map((artist: any) => artist.name),
-    imgUrl: mockSong.album.images && mockSong.album.images.length ? mockSong.album.images[mockSong.album.images.length - 1].url : "",
-    name: mockSong.name,
-    audioUrl: mockSong.preview_url,
-  } as SongInfo));
+  const searchResults = await searchTracks(searchQuery);
 
   res.send(searchResults);
 });
 
-router.post("/fave",  async (req: Request, res: Response) => {
+router.post("/fave", async (req: Request, res: Response) => {
   console.log(req.query);
   if (!req.query || !req.query.id) {
     res.sendStatus(400);
@@ -71,7 +75,7 @@ router.post("/unfave",  async (req: Request, res: Response) => {
   res.sendStatus(200);
 });
 
-router.post("/upvote",  async (req: Request, res: Response) => {
+router.post("/upvote", async (req: Request, res: Response) => {
   console.log(req.query);
   if (!req.query || !req.query.id) {
     res.sendStatus(400);
