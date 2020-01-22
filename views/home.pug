@@ -6,7 +6,7 @@ block content
       form#search(onsubmit="")
         label(for="song-search") Search for music
         .searchbox
-          input#song-search(type="text", placeholder="Stevie Wonder")
+          input#song-search(type="text", placeholder="ex. Bleachers")
           button(type="submit").image-btn
             img(src="images/ios-search.svg", alt="search button icon")
       ul#search-results
@@ -17,4 +17,4 @@ block content
         #song-info
         button#play-song.image-btn
           img(src="images/ios-play-circle.svg", alt="")
-    canvas#visualizer
+    canvas#visualizer(width='1000', height='1000')
