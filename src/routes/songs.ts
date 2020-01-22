@@ -77,7 +77,7 @@ router.post("/fave", async (req: Request, res: Response) => {
   res.sendStatus(200);
 });
 
-router.post("/unfave",  async (req: Request, res: Response) => {
+router.post("/unfave", async (req: Request, res: Response) => {
   console.log(req.query);
   if (!req.query || !req.query.id) {
     res.sendStatus(400);
@@ -86,6 +86,18 @@ router.post("/unfave",  async (req: Request, res: Response) => {
   
   const id: string = req.query.id;
   await (SongMeta as any).unfave(id);
+  res.sendStatus(200);
+});
+
+router.post("/toggle-fave", async (req: Request, res: Response) => {
+  console.log(req.query);
+  if (!req.query || !req.query.id) {
+    res.sendStatus(400);
+    return;
+  }
+  
+  const id: string = req.query.id;
+  await (SongMeta as any).toggleFave(id);
   res.sendStatus(200);
 });
 
@@ -101,17 +113,17 @@ router.post("/upvote", async (req: Request, res: Response) => {
   res.sendStatus(200);
 });
 
-router.get("/getFaves", async (req: Request, res: Response) => {
+router.get("/get-faves", async (req: Request, res: Response) => {
   console.log(req.query);
   if (!req.query) {
     res.sendStatus(400);
     return;
   }
   
-  const favesIds = (SongMeta as any).getFaves(req.query.id);
-  const favesInfo = getTracks(favesIds);
+  const favesIds = (await (SongMeta as any).getFaves()).map((meta: any) => meta.id);
+  console.log(favesIds);
+  const favesInfo = await getTracks(favesIds);
   res.send(favesInfo);
-  res.sendStatus(200);
 });
 
 export default router;
