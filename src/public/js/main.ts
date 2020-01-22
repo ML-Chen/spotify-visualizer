@@ -19,6 +19,11 @@ type ButtonEvent = EventTarget & {
   const searchResultsEl = document.getElementById('search-results')
   const savedSongsEl = document.getElementById('saved-songs')
 
+  async function toggleFave(id: string) {
+    await fetch('api/song/toggle-fave?id=' + id)
+    updateSavedSongs()
+  }
+
   const listSongs = (songs: SongInfo[], root: HTMLElement) => {
     songs.forEach((song: SongInfo) => {
       const songElem = document.createElement('li')
@@ -30,6 +35,9 @@ type ButtonEvent = EventTarget & {
             <h2>${song.name}</h2>
             <p>${song.artists.join(", ")}</p>
           </div>
+          <button class="image-btn fave">
+            <img src="images/ios-star-outline.svg" alt="Favorite" onclick="toggleFave(${song.id})" />
+          </button>
         </div>
       `
       button.innerHTML = songHTML

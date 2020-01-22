@@ -46,6 +46,18 @@ songSchema.statics.unfave = async function (songId: string) {
     ).exec();
 };
 
+songSchema.statics.toggleFave = async function (songId: string) {
+    // TODO: toggleFave only sets faved to true and not false
+    await this.findOne(
+        { "id": songId },
+        { upsert: true },
+        (err: any, song: any) => {
+            song.faved = !song.faved;
+            song.save();
+        },
+    );
+};
+
 songSchema.statics.getFaves = async function () {
     return await this.find({ faved: true }).exec();
 };
