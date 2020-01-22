@@ -38,6 +38,18 @@ async function searchTracks(query: string, limit = 4): Promise<SongInfo[]> {
   } as SongInfo));
 }
 
+async function getTracks(ids: string[]): Promise<SongInfo[]> {
+  const spotifyResponse = await spotifyApi.getTracks(ids);
+  console.log(spotifyResponse.body);
+  return spotifyResponse.body.tracks.map((song: any) => ({
+    id: song.id,
+    artists: song.artists.map((artist: any) => artist.name),
+    imgUrl: song.album.images && song.album.images.length ? song.album.images[song.album.images.length - 1].url : "",
+    name: song.name,
+    audioUrl: song.preview_url,
+  } as SongInfo));
+}
+
 router.get("/search", async (req: Request, res: Response) => {
   console.log(req.query);
   if (!req.query || !req.query.query) {
@@ -89,14 +101,14 @@ router.post("/upvote", async (req: Request, res: Response) => {
 
 router.get("/getFaves", async (req: Request, res: Response) => {
   console.log(req.query);
-  if (!req.query || !req.query.id) {
+  if (!req.query) {
     res.sendStatus(400);
     return;
   }
   
-  const faves = (SongMeta as any).getFaves(req.query.id);
-  // TODO: add song data like artist, etc.
-  res.send(faves);
+  const favesIds = (SongMeta as any).getFaves(req.query.id);
+  const favesInfo = getTracks(favesIds);
+  res.send(favesInfo);
   res.sendStatus(200);
 });
 
