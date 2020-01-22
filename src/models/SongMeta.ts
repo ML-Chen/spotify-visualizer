@@ -47,7 +47,7 @@ songSchema.statics.unfave = async function (songId: string) {
 };
 
 songSchema.statics.getFaves = async function () {
-    await this.find({ saved: true }).exec();
+    return await this.find({ faved: true }).exec();
 };
 
 export const SongMeta = mongoose.model<SongDocument>("SongMeta", songSchema);

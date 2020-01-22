@@ -101,17 +101,17 @@ router.post("/upvote", async (req: Request, res: Response) => {
   res.sendStatus(200);
 });
 
-router.get("/getFaves", async (req: Request, res: Response) => {
+router.get("/get-faves", async (req: Request, res: Response) => {
   console.log(req.query);
   if (!req.query) {
     res.sendStatus(400);
     return;
   }
   
-  const favesIds = (SongMeta as any).getFaves(req.query.id);
-  const favesInfo = getTracks(favesIds);
+  const favesIds = (await (SongMeta as any).getFaves()).map((meta: any) => meta.id);
+  console.log(favesIds);
+  const favesInfo = await getTracks(favesIds);
   res.send(favesInfo);
-  res.sendStatus(200);
 });
 
 export default router;

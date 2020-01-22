@@ -17,20 +17,11 @@ type ButtonEvent = EventTarget & {
   const searchForm = document.getElementById('search')
   const searchInput: HTMLInputElement = document.getElementById('song-search') as HTMLInputElement
   const searchResultsEl = document.getElementById('search-results')
+  const savedSongsEl = document.getElementById('saved-songs')
 
-  searchForm.onsubmit = async event => {
-    event.preventDefault()
-
-    const query = searchInput.value;
-
-    const queryResult = await fetch('api/songs/search?query=' + query);
-    const songs: SongInfo[] = await queryResult.json();
-
-    // clear existing search results
-    searchResultsEl.innerHTML = ""
-
-    songs.forEach(song => {
-      const searchResult = document.createElement('li')
+  const listSongs = (songs: SongInfo[], root: HTMLElement) => {
+    songs.forEach((song: SongInfo) => {
+      const songElem = document.createElement('li')
       const button = document.createElement('button')
       const songHTML = `
         <div class="song-info">
@@ -47,12 +38,33 @@ type ButtonEvent = EventTarget & {
         nowPlayingEl.innerHTML = songHTML
       }
 
-      searchResult.appendChild(button)
-      searchResultsEl.appendChild(searchResult)
+      songElem.appendChild(button)
+      root.appendChild(songElem)
     })
+  }
+
+  searchForm.onsubmit = async event => {
+    event.preventDefault()
+
+    const query = searchInput.value;
+
+    const queryResult = await fetch('api/songs/search?query=' + query);
+    const songs: SongInfo[] = await queryResult.json();
+
+    // clear existing search results
+    searchResultsEl.innerHTML = ""
+
+    listSongs(songs, searchResultsEl)
 
     return false
   }
+
+  const updateSavedSongs = async () => {
+    const savedSongsResult = await fetch('api/songs/get-faves')
+    const savedSongs: SongInfo[] = await savedSongsResult.json()
+    listSongs(savedSongs, savedSongsEl)
+  }
+  updateSavedSongs()
 
   document.addEventListener('click', (event) => {
     const target: ButtonEvent = event.target
