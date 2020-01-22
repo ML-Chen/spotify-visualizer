@@ -20,8 +20,8 @@ type ButtonEvent = EventTarget & {
   const savedSongsEl = document.getElementById('saved-songs')
 
   async function toggleFave(id: string) {
-    await fetch('api/song/toggle-fave?id=' + id)
-    updateSavedSongs()
+    await fetch('api/songs/fave?id=' + id, { method: 'POST' })
+    await updateSavedSongs()
   }
 
   const listSongs = (songs: SongInfo[], root: HTMLElement) => {
@@ -35,10 +35,8 @@ type ButtonEvent = EventTarget & {
             <h2>${song.name}</h2>
             <p>${song.artists.join(", ")}</p>
           </div>
-          <button class="image-btn fave">
-            <img src="images/ios-star-outline.svg" alt="Favorite" onclick="toggleFave(${song.id})" />
-          </button>
         </div>
+        <h4 hidden>${song.id}</h4>
       `
       button.innerHTML = songHTML
       button.onclick = () => {
@@ -70,6 +68,7 @@ type ButtonEvent = EventTarget & {
   const updateSavedSongs = async () => {
     const savedSongsResult = await fetch('api/songs/get-faves')
     const savedSongs: SongInfo[] = await savedSongsResult.json()
+    savedSongsEl.innerHTML = ""
     listSongs(savedSongs, savedSongsEl)
   }
   updateSavedSongs()
@@ -78,6 +77,11 @@ type ButtonEvent = EventTarget & {
     const target: ButtonEvent = event.target
     if (target.id === 'play-song' || target.parentElement.id === 'play-song') {
       audioPlayer.paused ? audioPlayer.play() : audioPlayer.pause()
+    } else if (target.id === 'fave') {
+      console.log("hello")
+      console.log(document.getElementById("song-info").getElementsByTagName('h4')[0].innerHTML)
+      console.log("hey")
+      toggleFave(document.getElementById("song-info").getElementsByTagName('h4')[0].innerHTML)
     }
   })
 })()
