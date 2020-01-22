@@ -12,11 +12,40 @@ type ButtonEvent = EventTarget & {
 }
 
 (async function main() {
-  const audioPlayer = new Audio()
+  const audioPlayer = document.createElement('audio')
+  let audioContext: AudioContext = null
+  audioPlayer.crossOrigin = 'anonymous'
   const nowPlayingEl = document.getElementById('song-info')
   const searchForm = document.getElementById('search')
   const searchInput: HTMLInputElement = document.getElementById('song-search') as HTMLInputElement
   const searchResultsEl = document.getElementById('search-results')
+
+  const setAudioAnalyzer = async (audioUrl: string) => {
+    audioPlayer.src = audioUrl
+    audioContext = new AudioContext()
+    const source = audioContext.createMediaElementSource(audioPlayer)
+    
+    const analyser = audioContext.createAnalyser()
+    source.connect(analyser)
+    analyser.connect(audioContext.destination)
+    analyser.fftSize = 64
+
+    console.log(analyser.frequencyBinCount)
+
+    const frequencyData = new Uint8Array(analyser.frequencyBinCount);
+
+    const updateVisualizer = () => {
+      // Schedule the next update
+      requestAnimationFrame(updateVisualizer);
+  
+      // Get the new frequency data
+      analyser.getByteFrequencyData(frequencyData);
+  
+      // Update the visualisation
+      console.log(frequencyData.join(', '))
+    }
+    updateVisualizer()
+  }
 
   searchForm.onsubmit = async event => {
     event.preventDefault()
@@ -43,7 +72,7 @@ type ButtonEvent = EventTarget & {
       `
       button.innerHTML = songHTML
       button.onclick = () => {
-        audioPlayer.src = song.audioUrl
+        setAudioAnalyzer(song.audioUrl)
         nowPlayingEl.innerHTML = songHTML
       }
 
@@ -57,6 +86,7 @@ type ButtonEvent = EventTarget & {
   document.addEventListener('click', (event) => {
     const target: ButtonEvent = event.target
     if (target.id === 'play-song' || target.parentElement.id === 'play-song') {
+      console.log(audioPlayer.src)
       audioPlayer.paused ? audioPlayer.play() : audioPlayer.pause()
     }
   })
