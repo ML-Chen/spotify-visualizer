@@ -28,7 +28,7 @@ const getAccessToken = () => spotifyApi.clientCredentialsGrant().then(
 getAccessToken();
 setInterval(getAccessToken, 55 * 60 * 1000);
 
-async function searchTracks(query: string, limit = 4): Promise<SongInfo[]> {
+async function searchTracks(query: string, limit = 2): Promise<SongInfo[]> {
   const spotifyResponse = await spotifyApi.searchTracks(query, { limit: limit });
   console.log(spotifyResponse.body);
   return spotifyResponse.body.tracks.items.map((song: any) => ({
