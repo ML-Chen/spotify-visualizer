@@ -20,6 +20,9 @@ type ButtonEvent = EventTarget & {
   const searchInput: HTMLInputElement = document.getElementById('song-search') as HTMLInputElement
   const searchResultsEl = document.getElementById('search-results')
 
+  const canvas: HTMLCanvasElement = document.getElementById('visualizer') as HTMLCanvasElement
+  const vizContext = canvas.getContext('2d')
+
   const setAudioAnalyzer = async (audioUrl: string) => {
     audioPlayer.src = audioUrl
     audioContext = new AudioContext()
@@ -34,15 +37,33 @@ type ButtonEvent = EventTarget & {
 
     const frequencyData = new Uint8Array(analyser.frequencyBinCount);
 
-    const updateVisualizer = () => {
-      // Schedule the next update
-      requestAnimationFrame(updateVisualizer);
-  
+    const updateVisualizer = (prevFrequencyData?: Uint8Array) => {
       // Get the new frequency data
       analyser.getByteFrequencyData(frequencyData);
+      
+      // Schedule the next update
+      requestAnimationFrame(() => updateVisualizer(frequencyData));
   
       // Update the visualisation
-      console.log(frequencyData.join(', '))
+      vizContext.clearRect(0, 0, canvas.width, canvas.height)
+      const center = {
+        x: canvas.width / 2,
+        y: canvas.height / 2,
+      }
+      frequencyData.slice(0, 20).forEach((point, index) => {
+        const angleInRadians = index * 0.1 * Math.PI
+        let radius = (point - 128) * 2
+        radius += index * 4
+        if (radius < 0 || point === 0)
+        radius = 0
+        vizContext.beginPath()
+        vizContext.moveTo(center.x, center.y)
+        vizContext.lineTo(center.x + radius * Math.cos(angleInRadians - 0.05), center.y + radius * Math.sin(angleInRadians - 0.05))
+        vizContext.lineTo(center.x + radius * Math.cos(angleInRadians + 0.05), center.y + radius * Math.sin(angleInRadians + 0.05))
+        vizContext.fillStyle = `rgb(255, ${index * 12.75}, 0)`
+        vizContext.closePath()
+        vizContext.fill()
+      })
     }
     updateVisualizer()
   }
