@@ -28,8 +28,8 @@ const getAccessToken = () => spotifyApi.clientCredentialsGrant().then(
 getAccessToken();
 setInterval(getAccessToken, 55 * 60 * 1000);
 
-async function searchTracks(query: string, limit = 2): Promise<SongInfo[]> {
-  const spotifyResponse = await spotifyApi.searchTracks(query, { limit: limit });
+async function searchTracks(query: string, limit = 30, market = "US"): Promise<SongInfo[]> {
+  const spotifyResponse = await spotifyApi.searchTracks(query, { limit, market });
   console.log(spotifyResponse.body);
   return spotifyResponse.body.tracks.items.map((song: any) => ({
     id: song.id,
@@ -37,7 +37,7 @@ async function searchTracks(query: string, limit = 2): Promise<SongInfo[]> {
     imgUrl: song.album.images && song.album.images.length ? song.album.images[song.album.images.length - 1].url : "",
     name: song.name,
     audioUrl: song.preview_url,
-  } as SongInfo));
+  } as SongInfo)).filter(song => song.audioUrl).slice(0, 3);
 }
 
 async function getTracks(ids: string[]): Promise<SongInfo[]> {
