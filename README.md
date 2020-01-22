@@ -24,3 +24,6 @@ Whitelist your connection IP address.
 
 - https://github.com/microsoft/TypeScript-Node-Starter/
 - https://stackoverflow.com/questions/11375070/pushing-to-github-after-a-shallow-clone
+- https://stackoverflow.com/questions/42448372/typescript-mongoose-static-model-method-property-does-not-exist-on-type
+- https://medium.com/@tomanagle/strongly-typed-models-with-mongoose-and-typescript-7bc2f7197722
+- https://pawelgrzybek.com/typescript-interface-vs-type/
