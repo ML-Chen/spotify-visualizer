@@ -54,7 +54,7 @@ type ButtonEvent = EventTarget & {
   }
 
   document.addEventListener('click', (event) => {
-    const target:ButtonEvent = event.target
+    const target: ButtonEvent = event.target
     if (target.id === 'play-song') {
       audioPlayer.paused ? audioPlayer.play() : audioPlayer.pause()
     }
