@@ -4,7 +4,7 @@ import { SongMeta } from "../models/SongMeta";
 
 const router = Router();
 
-router.get("/upvote", (req: Request, res: Response) => {
+router.get("/upvote",  async (req: Request, res: Response) => {
   console.log(req.query);
   if (!req.query || !req.query.query) {
     res.sendStatus(400);
@@ -12,7 +12,7 @@ router.get("/upvote", (req: Request, res: Response) => {
   }
   
   const songId: string = req.query.songId;
-  await SongMeta.upvote(songId);
+  await (SongMeta as any).upvote(songId);
   res.sendStatus(200);
 });
 
