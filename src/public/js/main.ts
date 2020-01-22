@@ -8,6 +8,7 @@ type SongInfo = {
 
 type ButtonEvent = EventTarget & {
   id?: string;
+  parentElement?: HTMLElement;
 }
 
 (async function main() {
@@ -55,7 +56,7 @@ type ButtonEvent = EventTarget & {
 
   document.addEventListener('click', (event) => {
     const target: ButtonEvent = event.target
-    if (target.id === 'play-song') {
+    if (target.id === 'play-song' || target.parentElement.id === 'play-song') {
       audioPlayer.paused ? audioPlayer.play() : audioPlayer.pause()
     }
   })

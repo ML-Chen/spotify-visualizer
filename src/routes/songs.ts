@@ -1,11 +1,58 @@
 import { Router, Response, Request } from "express";
+import SpotifyWebApi from "spotify-web-api-node";
 import { SongInfo } from "../models/SongInfo";
 import { SongMeta } from "../models/SongMeta";
+import { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET } from "../util/secrets";
 import mockSongData from "../models/mockData";
 
 const router = Router();
+const spotifyApi = new SpotifyWebApi({
+  clientId: SPOTIFY_CLIENT_ID,
+  clientSecret: SPOTIFY_CLIENT_SECRET,
+});
+const authorizeURL = spotifyApi.createAuthorizeURL([], "state");
 
-router.get("/search", (req: Request, res: Response) => {
+// Retrieve an access token.
+const getAccessToken = () => spotifyApi.clientCredentialsGrant().then(
+  function (data) {
+    console.log("The access token expires in " + data.body["expires_in"]);
+    console.log("The access token is " + data.body["access_token"]);
+
+    // Save the access token so that it's used in future calls
+    spotifyApi.setAccessToken(data.body["access_token"]);
+  },
+  function (err) {
+    console.log("Something went wrong when retrieving an access token", err);
+  }
+);
+getAccessToken();
+setInterval(getAccessToken, 55 * 60 * 1000);
+
+async function searchTracks(query: string, limit = 30, market = "US"): Promise<SongInfo[]> {
+  const spotifyResponse = await spotifyApi.searchTracks(query, { limit, market });
+  console.log(spotifyResponse.body);
+  return spotifyResponse.body.tracks.items.map((song: any) => ({
+    id: song.id,
+    artists: song.artists.map((artist: any) => artist.name),
+    imgUrl: song.album.images && song.album.images.length ? song.album.images[song.album.images.length - 1].url : "",
+    name: song.name,
+    audioUrl: song.preview_url,
+  } as SongInfo)).filter(song => song.audioUrl).slice(0, 3);
+}
+
+async function getTracks(ids: string[]): Promise<SongInfo[]> {
+  const spotifyResponse = await spotifyApi.getTracks(ids);
+  console.log(spotifyResponse.body);
+  return spotifyResponse.body.tracks.map((song: any) => ({
+    id: song.id,
+    artists: song.artists.map((artist: any) => artist.name),
+    imgUrl: song.album.images && song.album.images.length ? song.album.images[song.album.images.length - 1].url : "",
+    name: song.name,
+    audioUrl: song.preview_url,
+  } as SongInfo));
+}
+
+router.get("/search", async (req: Request, res: Response) => {
   console.log(req.query);
   if (!req.query || !req.query.query) {
     res.sendStatus(400);
@@ -13,20 +60,12 @@ router.get("/search", (req: Request, res: Response) => {
   }
 
   const searchQuery = req.query.query;
-
-  // TODO: make call to Spotify instead of grabbing sample JSON
-  const searchResults: SongInfo[] = mockSongData.map((mockSong: any) => ({
-    id: mockSong.id,
-    artists: mockSong.artists.map((artist: any) => artist.name),
-    imgUrl: mockSong.album.images && mockSong.album.images.length ? mockSong.album.images[mockSong.album.images.length - 1].url : "",
-    name: mockSong.name,
-    audioUrl: mockSong.preview_url,
-  } as SongInfo));
+  const searchResults = await searchTracks(searchQuery);
 
   res.send(searchResults);
 });
 
-router.post("/fave",  async (req: Request, res: Response) => {
+router.post("/fave", async (req: Request, res: Response) => {
   console.log(req.query);
   if (!req.query || !req.query.id) {
     res.sendStatus(400);
@@ -50,7 +89,7 @@ router.post("/unfave",  async (req: Request, res: Response) => {
   res.sendStatus(200);
 });
 
-router.post("/upvote",  async (req: Request, res: Response) => {
+router.post("/upvote", async (req: Request, res: Response) => {
   console.log(req.query);
   if (!req.query || !req.query.id) {
     res.sendStatus(400);
@@ -64,14 +103,14 @@ router.post("/upvote",  async (req: Request, res: Response) => {
 
 router.get("/getFaves", async (req: Request, res: Response) => {
   console.log(req.query);
-  if (!req.query || !req.query.id) {
+  if (!req.query) {
     res.sendStatus(400);
     return;
   }
   
-  const faves = (SongMeta as any).getFaves(req.query.id);
-  // TODO: add song data like artist, etc.
-  res.send(faves);
+  const favesIds = (SongMeta as any).getFaves(req.query.id);
+  const favesInfo = getTracks(favesIds);
+  res.send(favesInfo);
   res.sendStatus(200);
 });
 

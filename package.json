@@ -27,6 +27,7 @@
         "watch-debug": "concurrently -k -p \"[{name}]\" -n \"Sass,TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-sass\" \"npm run watch-ts\" \"npm run serve-debug\""
     },
     "dependencies": {
+        "@types/spotify-web-api-node": "^4.0.1",
         "async": "^3.1.0",
         "bcrypt-nodejs": "^0.0.3",
         "bluebird": "^3.5.5",
@@ -50,6 +51,7 @@
         "pug": "^2.0.4",
         "request": "^2.88.0",
         "request-promise": "^4.2.4",
+        "spotify-web-api-node": "^4.0.0",
         "ts-mongoose": "0.0.21",
         "winston": "^3.2.1"
     },
