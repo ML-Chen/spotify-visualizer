@@ -14,16 +14,16 @@ type ButtonEvent = EventTarget & {
   const audioPlayer = new Audio()
   const nowPlayingEl = document.getElementById('song-info')
   const searchForm = document.getElementById('search')
-  const searchInput = document.getElementById('song-search')
+  const searchInput: HTMLInputElement = document.getElementById('song-search') as HTMLInputElement
   const searchResultsEl = document.getElementById('search-results')
 
   searchForm.onsubmit = async event => {
     event.preventDefault()
 
-    const query = searchInput.value
+    const query = searchInput.value;
 
     const queryResult = await fetch('api/songs/search?query=' + query);
-    const songs:SongInfo[] = await queryResult.json();
+    const songs: SongInfo[] = await queryResult.json();
 
     // clear existing search results
     searchResultsEl.innerHTML = ""
@@ -54,7 +54,7 @@ type ButtonEvent = EventTarget & {
   }
 
   document.addEventListener('click', (event) => {
-    const target:ButtonEvent = event.target
+    const target: ButtonEvent = event.target
     if (target.id === 'play-song') {
       audioPlayer.paused ? audioPlayer.play() : audioPlayer.pause()
     }

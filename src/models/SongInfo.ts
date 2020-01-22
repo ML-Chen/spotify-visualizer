@@ -4,4 +4,5 @@ export type SongInfo = {
   imgUrl: string;
   name: string;
   audioUrl: string;
+  votes: number;
 }
