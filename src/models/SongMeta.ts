@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+mongoose.set("useFindAndModify", false);
 
 export type SongDocument = mongoose.Document & {
     id: string;
