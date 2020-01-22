@@ -13,18 +13,20 @@ const spotifyApi = new SpotifyWebApi({
 const authorizeURL = spotifyApi.createAuthorizeURL([], "state");
 
 // Retrieve an access token.
-spotifyApi.clientCredentialsGrant().then(
-  function(data) {
+const getAccessToken = () => spotifyApi.clientCredentialsGrant().then(
+  function (data) {
     console.log("The access token expires in " + data.body["expires_in"]);
     console.log("The access token is " + data.body["access_token"]);
 
     // Save the access token so that it's used in future calls
     spotifyApi.setAccessToken(data.body["access_token"]);
   },
-  function(err) {
+  function (err) {
     console.log("Something went wrong when retrieving an access token", err);
   }
 );
+getAccessToken();
+setInterval(getAccessToken, 55 * 60 * 1000);
 
 async function searchTracks(query: string, limit = 4): Promise<SongInfo[]> {
   const spotifyResponse = await spotifyApi.searchTracks(query, { limit: limit });
