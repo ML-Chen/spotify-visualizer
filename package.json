@@ -28,7 +28,7 @@
     },
     "dependencies": {
         "@types/spotify-web-api-node": "^4.0.1",
-        "async": "^3.1.0",
+        "async": "^3.2.2",
         "bcrypt-nodejs": "^0.0.3",
         "bluebird": "^3.5.5",
         "body-parser": "^1.19.0",
